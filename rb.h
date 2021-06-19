@@ -23,7 +23,7 @@ struct rb_tree {
 };
 
 /*
- * Return a node red-black tree.
+ * Return a new red-black tree.
  */
 struct rb_tree rb_tree_init(void);
 

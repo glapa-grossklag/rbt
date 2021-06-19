@@ -2,7 +2,7 @@ SRC    = $(wildcard *.c)
 OBJ    = $(SRC:%.c=%.o)
 BIN    = rb-test
 
-CC     = gcc
+CC     = clang
 CFLAGS = -Wall -Wextra -O0
 
 .PHONY: all tidy clean debug format
@@ -20,12 +20,6 @@ tidy:
 
 clean: tidy
 	rm -f $(BIN)
-
-debug: CFLAGS += -O0 -g
-debug: all
-
-gdb: debug
-	gdb -se $(BIN) -ex run -ex backtrace -q
 
 format:
 	find . -name "*.[ch]" | xargs clang-format -i -style=file

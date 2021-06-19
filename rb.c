@@ -1,5 +1,4 @@
 #include "rb.h"
-
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -182,8 +181,7 @@ rb_remove(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp) {
         rb_transplant(tree, node, node->left);
     } else {
         // Two children.
-        struct rb_node *next = node;
-        next = rb_first(node->right);
+        struct rb_node *next = rb_first(node->right);
         color = next->color;
         child = next->right;
 

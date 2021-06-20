@@ -174,8 +174,45 @@ test_search_inorder(void) {
  */
 bool
 test_search_random(void) {
+    struct rb_tree tree = rb_tree_init();
 
-    return false;
+    // Build up the tree.
+    struct box boxes[TESTS];
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        boxes[i].rb_node = rb_node_init();
+
+        // Generate a key until it isn't a duplicate.
+        do {
+            boxes[i].key = rand();
+        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+    }
+
+    // Search for elements that should be in the tree.
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        struct box box;
+        box.key = boxes[i].key;
+        box.rb_node = rb_node_init();
+
+        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        if (found != &boxes[i].rb_node) {
+            return false;
+        }
+    }
+
+    // Search for elements that should **not** be in the tree.
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        struct box box;
+        box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0. TODO: Write a comment explaining this.
+        box.rb_node = rb_node_init();
+
+        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        if (found) {
+            return false;
+        }
+    }
+
+    // The tree is valid!
+    return true;
 }
 
 /*
@@ -186,7 +223,7 @@ test_search_random(void) {
  */
 bool
 test_remove_inorder(void) {
-
+    // TODO
     return false;
 }
 
@@ -198,7 +235,7 @@ test_remove_inorder(void) {
  */
 bool
 test_remove_random(void) {
-
+    // TODO
     return false;
 }
 

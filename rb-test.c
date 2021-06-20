@@ -19,18 +19,18 @@
 // ----------------------------------------------------------------------------
 
 struct box {
-    int n;
-    struct rb_node node;
+    int key;
+    struct rb_node rb_node;
 };
 
 int
 cmp(struct rb_node *l, struct rb_node *r) {
-    struct box *lb = container_of(l, struct box, node);
-    struct box *rb = container_of(r, struct box, node);
+    struct box *lb = container_of(l, struct box, rb_node);
+    struct box *rb = container_of(r, struct box, rb_node);
 
-    if (lb->n < rb->n)
+    if (lb->key < rb->key)
         return -1;
-    if (lb->n > rb->n)
+    if (lb->key > rb->key)
         return +1;
     return 0;
 }
@@ -60,12 +60,12 @@ test_insert_inorder(void) {
 
     struct box boxes[TESTS];
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
-        boxes[i].n = i;
-        boxes[i].node = rb_node_init();
+        boxes[i].key = i;
+        boxes[i].rb_node = rb_node_init();
 
         // Insertion will only fail if a duplicate key is inserted, which won't
         // happen during in-order insertion.
-        struct rb_node *inserted = rb_insert(&tree, &boxes[i].node, cmp);
+        struct rb_node *inserted = rb_insert(&tree, &boxes[i].rb_node, cmp);
         if (!inserted) {
             return false;
         }
@@ -164,10 +164,10 @@ test_search() {
     // Create an array of TESTS boxes and nodes, insert them all into the tree.
     struct box array[TESTS];
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
-        array[i].n = i;
-        array[i].node = rb_node_init();
+        array[i].key = i;
+        array[i].rb_node = rb_node_init();
 
-        assert(rb_insert(&tree, &array[i].node, cmp));
+        assert(rb_insert(&tree, &array[i].rb_node, cmp));
 
         // The tree must be valid at every step.
         assert(rb_is_valid(&tree));
@@ -177,12 +177,12 @@ test_search() {
         // Create a new box with the same data, but a different memory
         // address to search.
         struct box box;
-        box.n = array[i].n;
+        box.key = array[i].key;
 
         // Despite being a different box and node, the search should return the
         // original node.
-        struct rb_node *found = rb_search(&tree, &box.node, cmp);
-        assert(found == &array[i].node);
+        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        assert(found == &array[i].rb_node);
 
         assert(rb_is_valid(&tree));
     }
@@ -195,9 +195,9 @@ test_remove() {
     // Create an array of TESTS boxes and nodes, insert them all into the tree.
     struct box array[TESTS];
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
-        array[i].n = i;
-        array[i].node = rb_node_init();
-        rb_insert(&tree, &array[i].node, cmp);
+        array[i].key = i;
+        array[i].rb_node = rb_node_init();
+        rb_insert(&tree, &array[i].rb_node, cmp);
 
         // The tree must be valid at every step.
         assert(rb_is_valid(&tree));
@@ -207,16 +207,16 @@ test_remove() {
         // Create a new box with the same data, but a different memory
         // address to search.
         struct box box;
-        box.n = array[i].n;
+        box.key = array[i].key;
 
         // Despite being a different box and node, the removal should remove
         // the original node.
-        struct rb_node *found = rb_search(&tree, &box.node, cmp);
-        assert(found == &array[i].node);
+        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        assert(found == &array[i].rb_node);
         rb_remove(&tree, found, cmp);
 
         // Should be gone now!
-        found = rb_search(&tree, &box.node, cmp);
+        found = rb_search(&tree, &box.rb_node, cmp);
         assert(found == NULL);
         assert(rb_is_valid(&tree));
     }

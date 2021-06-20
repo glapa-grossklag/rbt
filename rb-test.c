@@ -307,51 +307,15 @@ test_remove_random(void) {
         if (found) {
             return false;
         }
+    }
 
-        // The tree must be valid at every step.
-        if (!rb_is_valid(&tree)) {
-            return false;
-        }
+    // The tree must be valid.
+    if (!rb_is_valid(&tree)) {
+        return false;
     }
 
     // The tree is valid!
     return true;
-}
-
-void
-test_remove() {
-    struct rb_tree tree = rb_tree_init();
-
-    // Create an array of TESTS boxes and nodes, insert them all into the tree.
-    struct box array[TESTS];
-    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
-        array[i].key = i;
-        array[i].rb_node = rb_node_init();
-        rb_insert(&tree, &array[i].rb_node, cmp);
-
-        // The tree must be valid at every step.
-        assert(rb_is_valid(&tree));
-    }
-
-    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
-        // Create a new box with the same data, but a different memory
-        // address to search.
-        struct box box;
-        box.key = array[i].key;
-
-        // Despite being a different box and node, the removal should remove
-        // the original node.
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
-        assert(found == &array[i].rb_node);
-        rb_remove(&tree, found, cmp);
-
-        // Should be gone now!
-        found = rb_search(&tree, &box.rb_node, cmp);
-        assert(found == NULL);
-        assert(rb_is_valid(&tree));
-    }
-
-    assert(rb_is_valid(&tree));
 }
 
 int

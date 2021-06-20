@@ -110,6 +110,16 @@ test_insert_random(void) {
 }
 
 /*
+ * Create a box with which to search. This new box will have the same
+ * key as the box for which we're searching, but a different memory
+ * address. Thus, search should return the original node, not the new
+ * node.
+ *
+ * TODO:
+ * - Write comment explaining testing methodology here and fix above comment.
+ */
+
+/*
  * Test search for in-order elements, in [0, TESTS).
  *
  * This test assumes the insertion operation is correct and should not be used
@@ -117,8 +127,43 @@ test_insert_random(void) {
  */
 bool
 test_search_inorder(void) {
+    struct rb_tree tree = rb_tree_init();
 
-    return false;
+    // Build up the tree.
+    struct box boxes[TESTS];
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        boxes[i].key = i;
+        boxes[i].rb_node = rb_node_init();
+
+        rb_insert(&tree, &boxes[i].rb_node, cmp);
+    }
+
+    // Search for elements that should be in the tree.
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        struct box box;
+        box.key = boxes[i].key;
+        box.rb_node = rb_node_init();
+
+        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        if (found != &boxes[i].rb_node) {
+            return false;
+        }
+    }
+
+    // Search for elements that should **not** be in the tree.
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        struct box box;
+        box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0. TODO: Write a comment explaining this.
+        box.rb_node = rb_node_init();
+
+        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        if (found) {
+            return false;
+        }
+    }
+
+    // The tree is valid!
+    return true;
 }
 
 /*
@@ -252,7 +297,6 @@ main(void) {
     fprintf(stderr, "passed\n");
 
     fprintf(stderr, "Testing search... ");
-    test_search();
     assert(test_search_inorder());
     assert(test_search_random());
     fprintf(stderr, "passed\n");

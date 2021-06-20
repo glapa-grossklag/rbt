@@ -273,8 +273,48 @@ test_remove_inorder(void) {
  */
 bool
 test_remove_random(void) {
-    // TODO
-    return false;
+    struct rb_tree tree = rb_tree_init();
+
+    // Build up the tree.
+    struct box boxes[TESTS];
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        boxes[i].rb_node = rb_node_init();
+
+        // Generate a key until it isn't a duplicate.
+        do {
+            boxes[i].key = rand();
+        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+    }
+
+    // Remove items from the tree.
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        // Create a new box with the same data, but a different memory address
+        // to search.
+        struct box box;
+        box.key = boxes[i].key;
+
+        // Despite being a different box and node, the removal should remove
+        // the original node.
+        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *removed = rb_remove(&tree, found, cmp);
+        if (found != removed || removed != &boxes[i].rb_node) {
+            return false;
+        }
+
+        // Should be gone now!
+        found = rb_search(&tree, &box.rb_node, cmp);
+        if (found) {
+            return false;
+        }
+
+        // The tree must be valid at every step.
+        if (!rb_is_valid(&tree)) {
+            return false;
+        }
+    }
+
+    // The tree is valid!
+    return true;
 }
 
 /* void */

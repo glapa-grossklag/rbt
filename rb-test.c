@@ -12,7 +12,7 @@
         (type *)((char *)__mptr - offsetof(type, member));                                                             \
     })
 
-#define TESTS 1000
+#define TESTS 100000
 
 // ----------------------------------------------------------------------------
 // Helpers
@@ -68,11 +68,11 @@ test_insert_inorder(void) {
         if (!inserted) {
             return false;
         }
+    }
 
-        // The tree must be valid at every step.
-        if (!rb_is_valid(&tree)) {
-            return false;
-        }
+    // The tree must be valid.
+    if (!rb_is_valid(&tree)) {
+        return false;
     }
 
     // The tree is valid!
@@ -97,11 +97,11 @@ test_insert_random(void) {
         do {
             boxes[i].key = rand();
         } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+    }
 
-        // The tree must be valid at every step.
-        if (!rb_is_valid(&tree)) {
-            return false;
-        }
+    // The tree must be valid.
+    if (!rb_is_valid(&tree)) {
+        return false;
     }
 
     // The tree is valid!
@@ -255,11 +255,11 @@ test_remove_inorder(void) {
         if (found) {
             return false;
         }
+    }
 
-        // The tree must be valid at every step.
-        if (!rb_is_valid(&tree)) {
-            return false;
-        }
+    // The tree must be valid.
+    if (!rb_is_valid(&tree)) {
+        return false;
     }
 
     // The tree is valid!

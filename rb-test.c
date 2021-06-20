@@ -39,6 +39,87 @@ cmp(struct rb_node *l, struct rb_node *r) {
 // Tests
 // ----------------------------------------------------------------------------
 
+/*
+ * TODO:
+ * - Both in-order testing and random testing. (Preferable separate functions.)
+ * - All three ops in the same test and rely on a separate "ground truth" array
+ *   so that all three ops are performed on the same tree.
+ * - Verify the tree is a valid binary search tree. Both structurally (e.g.,
+ *   node->child->parent == node) and order (simple loop).
+ */
+
+/*
+ * Test insertion of in-order elements, in [0, TESTS).
+ *
+ * This test does not rely on any other test and can be assumed to be a measure
+ * of correctness for insertion.
+ */
+bool
+test_insert_inorder(void) {
+
+    return false;
+}
+
+/*
+ * Test insertion of TESTS random elements.
+ *
+ * This test does not rely on any other test and can be assumed to be a measure
+ * of correctness for insertion.
+ */
+bool
+test_insert_random(void) {
+
+    return false;
+}
+
+/*
+ * Test search for in-order elements, in [0, TESTS).
+ *
+ * This test assumes the insertion operation is correct and should not be used
+ * as the sole measure of correctness.
+ */
+bool
+test_search_inorder(void) {
+
+    return false;
+}
+
+/*
+ * Test search for TESTS random elements.
+ *
+ * This test assumes the insertion operation is correct and should not be used
+ * as the sole measure of correctness.
+ */
+bool
+test_search_random(void) {
+
+    return false;
+}
+
+/*
+ * Test insertion of in-order elements, in [0, TESTS).
+ *
+ * This test assumes the insertion and search operations are correct and should not be used as
+ * the sole measure of correctness.
+ */
+bool
+test_remove_inorder(void) {
+
+    return false;
+}
+
+/*
+ * Test removal of TESTS random elements.
+ *
+ * This test assumes the insertion and search operations are correct and should not be used as
+ * the sole measure of correctness.
+ */
+bool
+test_remove_random(void) {
+
+    return false;
+}
+
 void
 test_insert() {
     struct rb_tree tree = rb_tree_init();

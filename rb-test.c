@@ -88,8 +88,25 @@ test_insert_inorder(void) {
  */
 bool
 test_insert_random(void) {
+    struct rb_tree tree = rb_tree_init();
 
-    return false;
+    struct box boxes[TESTS];
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        boxes[i].rb_node = rb_node_init();
+
+        // Generate a key until it isn't a duplicate.
+        do {
+            boxes[i].key = rand();
+        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+
+        // The tree must be valid at every step.
+        if (!rb_is_valid(&tree)) {
+            return false;
+        }
+    }
+
+    // The tree is valid!
+    return true;
 }
 
 /*

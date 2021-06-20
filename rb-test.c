@@ -56,8 +56,28 @@ cmp(struct rb_node *l, struct rb_node *r) {
  */
 bool
 test_insert_inorder(void) {
+    struct rb_tree tree = rb_tree_init();
 
-    return false;
+    struct box boxes[TESTS];
+    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
+        boxes[i].n = i;
+        boxes[i].node = rb_node_init();
+
+        // Insertion will only fail if a duplicate key is inserted, which won't
+        // happen during in-order insertion.
+        struct rb_node *inserted = rb_insert(&tree, &boxes[i].node, cmp);
+        if (!inserted) {
+            return false;
+        }
+
+        // The tree must be valid at every step.
+        if (!rb_is_valid(&tree)) {
+            return false;
+        }
+    }
+
+    // The tree is valid!
+    return true;
 }
 
 /*
@@ -120,41 +140,25 @@ test_remove_random(void) {
     return false;
 }
 
-void
-test_insert() {
-    struct rb_tree tree = rb_tree_init();
+/* void */
+/* test_insert() { */
 
-    // Create an array of TESTS boxes and nodes, insert them all into the tree.
-    struct box array[TESTS];
-    for (ptrdiff_t i = 0; i < TESTS; i += 1) {
-        array[i].n = i;
-        array[i].node = rb_node_init();
+/*     // Ensure all nodes are strictly increasing. */
+/*     struct rb_node *prev = NULL; */
+/*     struct rb_node *curr = NULL; */
+/*     rb_for_each(tree, curr) { */
+/*         if (prev) { */
+/*             struct box *currbox = container_of(curr, struct box, node); */
+/*             struct box *prevbox = container_of(prev, struct box, node); */
+/*             assert(currbox->n > prevbox->n); */
+/*         } */
 
-        assert(rb_insert(&tree, &array[i].node, cmp));
-
-        // The tree must be valid at every step.
-        assert(rb_is_valid(&tree));
-    }
-
-    // Ensure all nodes are strictly increasing.
-    struct rb_node *prev = NULL;
-    struct rb_node *curr = NULL;
-    rb_for_each(tree, curr) {
-        if (prev) {
-            struct box *currbox = container_of(curr, struct box, node);
-            struct box *prevbox = container_of(prev, struct box, node);
-            assert(currbox->n > prevbox->n);
-        }
-
-        prev = curr;
-    }
-}
+/*         prev = curr; */
+/*     } */
+/* } */
 
 void
 test_search() {
-    // Necessary prerequisites for this test.
-    test_insert();
-
     struct rb_tree tree = rb_tree_init();
 
     // Create an array of TESTS boxes and nodes, insert them all into the tree.
@@ -186,10 +190,6 @@ test_search() {
 
 void
 test_remove() {
-    // Necessary prerequisites for this test.
-    test_insert();
-    test_search();
-
     struct rb_tree tree = rb_tree_init();
 
     // Create an array of TESTS boxes and nodes, insert them all into the tree.
@@ -230,15 +230,20 @@ main(void) {
     srand(t);
 
     fprintf(stderr, "Testing insertion... ");
-    test_insert();
+    assert(test_insert_inorder());
+    assert(test_insert_random());
     fprintf(stderr, "passed\n");
 
     fprintf(stderr, "Testing search... ");
     test_search();
+    assert(test_search_inorder());
+    assert(test_search_random());
     fprintf(stderr, "passed\n");
 
     fprintf(stderr, "Testing removal... ");
     test_remove();
+    assert(test_remove_inorder());
+    assert(test_remove_random());
     fprintf(stderr, "passed\n");
 
     return 0;

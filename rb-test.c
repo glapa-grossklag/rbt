@@ -109,13 +109,15 @@ test_insert_random(void) {
 }
 
 /*
+ * Both search tests follow the following pattern:
+ *
  * Create a box with which to search. This new box will have the same
  * key as the box for which we're searching, but a different memory
  * address. Thus, search should return the original node, not the new
  * node.
  *
- * TODO:
- * - Write comment explaining testing methodology here and fix above comment.
+ * Create a different box with a key **not** present in any node. Search should
+ * return a NULL.
  */
 
 /*
@@ -152,7 +154,7 @@ test_search_inorder(void) {
     // Search for elements that should **not** be in the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         struct box box;
-        box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0. TODO: Write a comment explaining this.
+        box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0.
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
@@ -201,7 +203,7 @@ test_search_random(void) {
     // Search for elements that should **not** be in the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         struct box box;
-        box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0. TODO: Write a comment explaining this.
+        box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0.
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);

@@ -94,7 +94,7 @@ struct rb_node *rb_last(struct rb_node *tree);
  *    through the same number of black nodes.
  * 5. The root is black.
  */
-bool rb_is_valid(struct rb_tree *tree);
+bool rb_is_valid(struct rb_tree *tree, rb_cmp cmp);
 
 #endif
 

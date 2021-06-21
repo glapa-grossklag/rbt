@@ -434,11 +434,26 @@ rb_black_height(struct rb_node *node) {
 static bool rb_is_valid_helper(struct rb_node *node, unsigned expected_black_height, unsigned current_black_height);
 
 bool
-rb_is_valid(struct rb_tree *tree) {
+rb_is_valid(struct rb_tree *tree, rb_cmp cmp) {
     // Property 5: The root is black.
     if (!IS_BLACK(tree->root)) {
         fprintf(stderr, "Tree root is not black\n");
         return false;
+    }
+
+    if (tree->root->parent != NIL) {
+        return false;
+    }
+
+    // Ensure all nodes are strictly increasing.
+    struct rb_node *prev = NULL;
+    struct rb_node *curr = NULL;
+    rb_for_each(*tree, curr) {
+        if (prev && cmp(prev, curr) >= 0) {
+            return false;
+        }
+
+        prev = curr;
     }
 
     // Save the expected black height of the root to ensure property 4.
@@ -484,6 +499,15 @@ rb_is_valid_helper(struct rb_node *node, unsigned expected_black_height, unsigne
 
     if (node->color == RB_BLACK) {
         current_black_height += 1;
+    }
+
+    // Verify various structural properties true of any binary tree.
+    if (node->parent != NIL && node->parent->left != node && node->parent->right != node) {
+        return false;
+    }
+
+    if (node->left != NIL && node->right != NIL && (node->left->parent != node || node->right->parent != node)) {
+        return false;
     }
 
     return rb_is_valid_helper(node->left, expected_black_height, current_black_height) &&

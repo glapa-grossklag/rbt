@@ -40,12 +40,6 @@ cmp(struct rb_node *l, struct rb_node *r) {
 // ----------------------------------------------------------------------------
 
 /*
- * TODO:
- * - Verify the tree is a valid binary search tree. Both structurally (e.g.,
- *   node->child->parent == node) and order (simple loop).
- */
-
-/*
  * Test insertion of in-order elements, in [0, TESTS).
  *
  * This test does not rely on any other test and can be assumed to be a measure
@@ -69,7 +63,7 @@ test_insert_inorder(void) {
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 
@@ -100,7 +94,7 @@ test_insert_random(void) {
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 
@@ -258,7 +252,7 @@ test_remove_inorder(void) {
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 
@@ -310,7 +304,7 @@ test_remove_random(void) {
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 
@@ -337,7 +331,7 @@ test_all_inorder(void) {
         }
     }
 
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 
@@ -382,7 +376,7 @@ test_all_inorder(void) {
         }
     }
 
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 
@@ -421,7 +415,7 @@ test_all_random(void) {
         } while (!(inserted = rb_insert(&tree, &boxes[i].rb_node, cmp)));
     }
 
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 
@@ -466,7 +460,7 @@ test_all_random(void) {
         }
     }
 
-    if (!rb_is_valid(&tree)) {
+    if (!rb_is_valid(&tree, cmp)) {
         return false;
     }
 

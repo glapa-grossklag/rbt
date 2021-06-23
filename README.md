@@ -1,3 +1,12 @@
-# Red-Black Tree for the Twizzler Kernel
+# Overview
 
-* Miles Glapa-Grossklag <mglapagr@ucsc.edu>
+Red-Black Tree for the Twizzler Kernel
+
+# Usage
+
+To run tests (1,000,000 elements):
+
+```
+$ make
+$ ./rb-test
+```

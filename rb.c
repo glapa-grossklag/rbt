@@ -376,7 +376,7 @@ rb_prev(struct rb_node *node) {
         return NULL;
     }
 
-    struct rb_node *parent = NULL;
+    struct rb_node *parent = node->parent;
     while (parent != NIL && node == parent->left) {
         node = parent;
         parent = parent->parent;

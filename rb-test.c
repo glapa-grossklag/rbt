@@ -12,7 +12,7 @@
         (type *)((char *)__mptr - offsetof(type, member));                                                             \
     })
 
-#define TESTS 100000
+#define TESTS 1000000
 
 // ----------------------------------------------------------------------------
 // Helpers
@@ -40,6 +40,13 @@ cmp(struct rb_node *l, struct rb_node *r) {
 // ----------------------------------------------------------------------------
 
 /*
+ * NOTE:
+ * - The arrays used in these tests are dynamically allocated. The memory is
+ *   freed upon a successful test, but not upon an unsuccessful test. If tests
+ *   aren't passing there are bigger issues than memory leaks.
+ */
+
+/*
  * Test insertion of in-order elements, in [0, TESTS).
  *
  * This test does not rely on any other test and can be assumed to be a measure
@@ -49,7 +56,7 @@ bool
 test_insert_inorder(void) {
     struct rb_tree tree = rb_tree_init();
 
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
@@ -68,6 +75,7 @@ test_insert_inorder(void) {
     }
 
     // The tree is valid!
+    free(boxes);
     return true;
 }
 
@@ -81,16 +89,14 @@ bool
 test_insert_random(void) {
     struct rb_tree tree = rb_tree_init();
 
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].rb_node = rb_node_init();
-
-        struct rb_node *inserted = NULL;
 
         // Generate a key until it isn't a duplicate.
         do {
             boxes[i].key = rand();
-        } while (!(inserted = rb_insert(&tree, &boxes[i].rb_node, cmp)));
+        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
     }
 
     // The tree must be valid.
@@ -99,6 +105,7 @@ test_insert_random(void) {
     }
 
     // The tree is valid!
+    free(boxes);
     return true;
 }
 
@@ -125,7 +132,7 @@ test_search_inorder(void) {
     struct rb_tree tree = rb_tree_init();
 
     // Build up the tree.
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
@@ -158,6 +165,7 @@ test_search_inorder(void) {
     }
 
     // The tree is valid!
+    free(boxes);
     return true;
 }
 
@@ -172,7 +180,7 @@ test_search_random(void) {
     struct rb_tree tree = rb_tree_init();
 
     // Build up the tree.
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].rb_node = rb_node_init();
 
@@ -207,6 +215,7 @@ test_search_random(void) {
     }
 
     // The tree is valid!
+    free(boxes);
     return true;
 }
 
@@ -221,7 +230,7 @@ test_remove_inorder(void) {
     struct rb_tree tree = rb_tree_init();
 
     // Build up the tree.
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
@@ -257,6 +266,7 @@ test_remove_inorder(void) {
     }
 
     // The tree is valid!
+    free(boxes);
     return true;
 }
 
@@ -271,7 +281,7 @@ test_remove_random(void) {
     struct rb_tree tree = rb_tree_init();
 
     // Build up the tree.
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].rb_node = rb_node_init();
 
@@ -309,6 +319,7 @@ test_remove_random(void) {
     }
 
     // The tree is valid!
+    free(boxes);
     return true;
 }
 
@@ -320,7 +331,7 @@ test_all_inorder(void) {
     struct rb_tree tree = rb_tree_init();
 
     // Build up the tree.
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
@@ -393,6 +404,7 @@ test_all_inorder(void) {
     }
 
     // We made it!
+    free(boxes);
     return true;
 }
 
@@ -404,15 +416,14 @@ test_all_random(void) {
     struct rb_tree tree = rb_tree_init();
 
     // Build up the tree.
-    struct box boxes[TESTS];
+    struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = rand();
         boxes[i].rb_node = rb_node_init();
 
-        struct rb_node *inserted = NULL;
         do {
             boxes[i].key = rand();
-        } while (!(inserted = rb_insert(&tree, &boxes[i].rb_node, cmp)));
+        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
     }
 
     if (!rb_is_valid(&tree, cmp)) {
@@ -477,6 +488,7 @@ test_all_random(void) {
     }
 
     // We made it!
+    free(boxes);
     return true;
 }
 
@@ -488,6 +500,8 @@ int
 main(void) {
     unsigned long t = time(NULL);
     srand(t);
+
+    fprintf(stderr, "%u elements\n", TESTS);
 
     fprintf(stderr, "Testing insertion... ");
     assert(test_insert_inorder());

@@ -9,9 +9,10 @@
 struct rb_node nil = {NIL, NIL, NIL, RB_BLACK};
 
 struct rb_tree
-rb_tree_init(void) {
+rb_tree_init(rb_cmp cmp) {
     struct rb_tree tree;
     tree.root = NIL;
+    tree.cmp = cmp;
     return tree;
 }
 
@@ -32,7 +33,7 @@ rb_node_init(void) {
 void rb_insert_fixup(struct rb_tree *tree, struct rb_node *node);
 
 struct rb_node *
-rb_insert(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp) {
+rb_insert(struct rb_tree *tree, struct rb_node *node) {
     // If the tree is empty, then the node becomes the root.
     if (tree->root == NIL) {
         node->parent = NIL;
@@ -49,7 +50,7 @@ rb_insert(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp) {
     int result = 0;
     while (child != NIL) {
         parent = child;
-        result = cmp(node, child);
+        result = tree->cmp(node, child);
 
         if (result == 0) {
             // Cannot insert duplicate keys.
@@ -136,11 +137,11 @@ rb_insert_fixup(struct rb_tree *tree, struct rb_node *node) {
 // -----------------------------------------------------------------------------
 
 struct rb_node *
-rb_search(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp) {
+rb_search(struct rb_tree *tree, struct rb_node *node) {
     struct rb_node *curr = tree->root;
     int result = 0;
     while (curr != NIL) {
-        result = cmp(node, curr);
+        result = tree->cmp(node, curr);
 
         if (result == 0) {
             return curr;
@@ -163,8 +164,8 @@ static void rb_transplant(struct rb_tree *tree, struct rb_node *u, struct rb_nod
 static void rb_remove_fixup(struct rb_tree *tree, struct rb_node *x);
 
 struct rb_node *
-rb_remove(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp) {
-    if (!rb_search(tree, node, cmp)) {
+rb_remove(struct rb_tree *tree, struct rb_node *node) {
+    if (!rb_search(tree, node)) {
         return NULL;
     }
 
@@ -434,7 +435,7 @@ rb_black_height(struct rb_node *node) {
 static bool rb_is_valid_helper(struct rb_node *node, unsigned expected_black_height, unsigned current_black_height);
 
 bool
-rb_is_valid(struct rb_tree *tree, rb_cmp cmp) {
+rb_is_valid(struct rb_tree *tree) {
     // Property 5: The root is black.
     if (!IS_BLACK(tree->root)) {
         fprintf(stderr, "Tree root is not black\n");
@@ -449,7 +450,7 @@ rb_is_valid(struct rb_tree *tree, rb_cmp cmp) {
     struct rb_node *prev = NULL;
     struct rb_node *curr = NULL;
     rb_for_each(*tree, curr) {
-        if (prev && cmp(prev, curr) >= 0) {
+        if (prev && tree->cmp(prev, curr) >= 0) {
             return false;
         }
 

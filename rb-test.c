@@ -54,7 +54,7 @@ cmp(struct rb_node *l, struct rb_node *r) {
  */
 bool
 test_insert_inorder(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
@@ -63,14 +63,14 @@ test_insert_inorder(void) {
 
         // Insertion will only fail if a duplicate key is inserted, which won't
         // happen during in-order insertion.
-        struct rb_node *inserted = rb_insert(&tree, &boxes[i].rb_node, cmp);
+        struct rb_node *inserted = rb_insert(&tree, &boxes[i].rb_node);
         if (!inserted) {
             return false;
         }
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -87,7 +87,7 @@ test_insert_inorder(void) {
  */
 bool
 test_insert_random(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     struct box *boxes = malloc(TESTS * sizeof(struct box));
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
@@ -96,11 +96,11 @@ test_insert_random(void) {
         // Generate a key until it isn't a duplicate.
         do {
             boxes[i].key = rand();
-        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+        } while (!rb_insert(&tree, &boxes[i].rb_node));
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -129,7 +129,7 @@ test_insert_random(void) {
  */
 bool
 test_search_inorder(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
@@ -137,7 +137,7 @@ test_search_inorder(void) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
 
-        rb_insert(&tree, &boxes[i].rb_node, cmp);
+        rb_insert(&tree, &boxes[i].rb_node);
     }
 
     // Search for elements that should be in the tree.
@@ -146,7 +146,7 @@ test_search_inorder(void) {
         box.key = boxes[i].key;
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found != &boxes[i].rb_node) {
             return false;
         }
@@ -158,7 +158,7 @@ test_search_inorder(void) {
         box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0.
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
@@ -177,7 +177,7 @@ test_search_inorder(void) {
  */
 bool
 test_search_random(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
@@ -187,7 +187,7 @@ test_search_random(void) {
         // Generate a key until it isn't a duplicate.
         do {
             boxes[i].key = rand();
-        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+        } while (!rb_insert(&tree, &boxes[i].rb_node));
     }
 
     // Search for elements that should be in the tree.
@@ -196,7 +196,7 @@ test_search_random(void) {
         box.key = boxes[i].key;
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found != &boxes[i].rb_node) {
             return false;
         }
@@ -208,7 +208,7 @@ test_search_random(void) {
         box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0.
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
@@ -227,7 +227,7 @@ test_search_random(void) {
  */
 bool
 test_remove_inorder(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
@@ -235,7 +235,7 @@ test_remove_inorder(void) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
 
-        rb_insert(&tree, &boxes[i].rb_node, cmp);
+        rb_insert(&tree, &boxes[i].rb_node);
     }
 
     // Remove items from the tree.
@@ -247,21 +247,21 @@ test_remove_inorder(void) {
 
         // Despite being a different box and node, the removal should remove
         // the original node.
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
-        struct rb_node *removed = rb_remove(&tree, found, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
+        struct rb_node *removed = rb_remove(&tree, found);
         if (found != removed || removed != &boxes[i].rb_node) {
             return false;
         }
 
         // Should be gone now!
-        found = rb_search(&tree, &box.rb_node, cmp);
+        found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -278,7 +278,7 @@ test_remove_inorder(void) {
  */
 bool
 test_remove_random(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
@@ -288,7 +288,7 @@ test_remove_random(void) {
         // Generate a key until it isn't a duplicate.
         do {
             boxes[i].key = rand();
-        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+        } while (!rb_insert(&tree, &boxes[i].rb_node));
     }
 
     // Remove items from the tree.
@@ -300,21 +300,21 @@ test_remove_random(void) {
 
         // Despite being a different box and node, the removal should remove
         // the original node.
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
-        struct rb_node *removed = rb_remove(&tree, found, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
+        struct rb_node *removed = rb_remove(&tree, found);
         if (found != removed || removed != &boxes[i].rb_node) {
             return false;
         }
 
         // Should be gone now!
-        found = rb_search(&tree, &box.rb_node, cmp);
+        found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
     }
 
     // The tree must be valid.
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -328,7 +328,7 @@ test_remove_random(void) {
  */
 bool
 test_all_inorder(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
@@ -336,13 +336,13 @@ test_all_inorder(void) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
 
-        struct rb_node *inserted = rb_insert(&tree, &boxes[i].rb_node, cmp);
+        struct rb_node *inserted = rb_insert(&tree, &boxes[i].rb_node);
         if (!inserted) {
             return false;
         }
     }
 
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -352,7 +352,7 @@ test_all_inorder(void) {
         box.key = boxes[i].key;
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found != &boxes[i].rb_node) {
             return false;
         }
@@ -364,7 +364,7 @@ test_all_inorder(void) {
         box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0.
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
@@ -375,19 +375,19 @@ test_all_inorder(void) {
         struct box box;
         box.key = boxes[i].key;
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
-        struct rb_node *removed = rb_remove(&tree, found, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
+        struct rb_node *removed = rb_remove(&tree, found);
         if (found != removed || removed != &boxes[i].rb_node) {
             return false;
         }
 
-        found = rb_search(&tree, &box.rb_node, cmp);
+        found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
     }
 
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -397,7 +397,7 @@ test_all_inorder(void) {
         box.key = boxes[i].key;
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found != &boxes[i].rb_node) {
             return false;
         }
@@ -413,7 +413,7 @@ test_all_inorder(void) {
  */
 bool
 test_all_random(void) {
-    struct rb_tree tree = rb_tree_init();
+    struct rb_tree tree = rb_tree_init(cmp);
 
     // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
@@ -423,10 +423,10 @@ test_all_random(void) {
 
         do {
             boxes[i].key = rand();
-        } while (!rb_insert(&tree, &boxes[i].rb_node, cmp));
+        } while (!rb_insert(&tree, &boxes[i].rb_node));
     }
 
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -436,7 +436,7 @@ test_all_random(void) {
         box.key = boxes[i].key;
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found != &boxes[i].rb_node) {
             return false;
         }
@@ -448,7 +448,7 @@ test_all_random(void) {
         box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0.
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
@@ -459,19 +459,19 @@ test_all_random(void) {
         struct box box;
         box.key = boxes[i].key;
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
-        struct rb_node *removed = rb_remove(&tree, found, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
+        struct rb_node *removed = rb_remove(&tree, found);
         if (found != removed || removed != &boxes[i].rb_node) {
             return false;
         }
 
-        found = rb_search(&tree, &box.rb_node, cmp);
+        found = rb_search(&tree, &box.rb_node);
         if (found) {
             return false;
         }
     }
 
-    if (!rb_is_valid(&tree, cmp)) {
+    if (!rb_is_valid(&tree)) {
         return false;
     }
 
@@ -481,7 +481,7 @@ test_all_random(void) {
         box.key = boxes[i].key;
         box.rb_node = rb_node_init();
 
-        struct rb_node *found = rb_search(&tree, &box.rb_node, cmp);
+        struct rb_node *found = rb_search(&tree, &box.rb_node);
         if (found != &boxes[i].rb_node) {
             return false;
         }

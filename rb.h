@@ -18,20 +18,6 @@ struct rb_node {
     enum rb_color color;
 };
 
-struct rb_tree {
-    struct rb_node *root;
-};
-
-/*
- * Return a new red-black tree.
- */
-struct rb_tree rb_tree_init(void);
-
-/*
- * Return a new red-black tree node.
- */
-struct rb_node rb_node_init(void);
-
 /*
  * A comparison function used for insertion, search, and removal.
  *
@@ -42,22 +28,37 @@ struct rb_node rb_node_init(void);
  */
 typedef int (*rb_cmp)(struct rb_node *left, struct rb_node *right);
 
+struct rb_tree {
+    struct rb_node *root;
+    rb_cmp cmp;
+};
+
+/*
+ * Return a new red-black tree.
+ */
+struct rb_tree rb_tree_init(rb_cmp cmp);
+
+/*
+ * Return a new red-black tree node.
+ */
+struct rb_node rb_node_init(void);
+
 /*
  * Insert a node into a red-black tree. If insertion is successful, return the
  * node, else return NULL since an equal node is already in the tree.
  */
-struct rb_node *rb_insert(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp);
+struct rb_node *rb_insert(struct rb_tree *tree, struct rb_node *node);
 
 /*
  * If an equal node is in the tree, then return it, else return NULL.
  */
-struct rb_node *rb_search(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp);
+struct rb_node *rb_search(struct rb_tree *tree, struct rb_node *node);
 
 /*
  * Remove a node from a red-black tree. Return the removed node if successful,
  * else return NULL since the node was not in the tree.
  */
-struct rb_node *rb_remove(struct rb_tree *tree, struct rb_node *node, rb_cmp cmp);
+struct rb_node *rb_remove(struct rb_tree *tree, struct rb_node *node);
 
 /*
  * Return the in-order successor of the given node.
@@ -94,7 +95,7 @@ struct rb_node *rb_last(struct rb_node *tree);
  *    through the same number of black nodes.
  * 5. The root is black.
  */
-bool rb_is_valid(struct rb_tree *tree, rb_cmp cmp);
+bool rb_is_valid(struct rb_tree *tree);
 
 #endif
 

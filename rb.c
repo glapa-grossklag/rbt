@@ -404,6 +404,10 @@ rb_last(struct rb_node *tree) {
     return last == NIL ? NULL : last;
 }
 
+bool rb_is_empty(struct rb_tree *tree) {
+    return tree->root == NIL;
+}
+
 /*
  * The functions below are only needed for testing.
  */

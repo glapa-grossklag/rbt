@@ -81,6 +81,11 @@ struct rb_node *rb_first(struct rb_node *tree);
 struct rb_node *rb_last(struct rb_node *tree);
 
 /*
+ * Return true if a tree is empty, else false.
+ */
+bool rb_is_empty(struct rb_tree *tree);
+
+/*
  * The functions below are only needed for testing.
  */
 #ifndef NDEBUG

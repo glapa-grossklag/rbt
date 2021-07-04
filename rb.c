@@ -6,7 +6,7 @@
 #define IS_RED(NODE) ((NODE)->color == RB_RED)
 #define NIL (&nil)
 
-struct rb_node nil = {NIL, NIL, NIL, RB_BLACK};
+static struct rb_node nil = {NIL, NIL, NIL, RB_BLACK};
 
 struct rb_tree
 rb_tree_init(rb_cmp cmp) {
@@ -30,7 +30,7 @@ rb_node_init(void) {
 // Insertion
 // -----------------------------------------------------------------------------
 
-void rb_insert_fixup(struct rb_tree *tree, struct rb_node *node);
+static void rb_insert_fixup(struct rb_tree *tree, struct rb_node *node);
 
 struct rb_node *
 rb_insert(struct rb_tree *tree, struct rb_node *node) {
@@ -83,7 +83,7 @@ rb_insert(struct rb_tree *tree, struct rb_node *node) {
 static void rb_rotate_left(struct rb_tree *tree, struct rb_node *node);
 static void rb_rotate_right(struct rb_tree *tree, struct rb_node *node);
 
-void
+static void
 rb_insert_fixup(struct rb_tree *tree, struct rb_node *node) {
     while (node != tree->root && IS_RED(node->parent)) {
         if (node->parent == node->parent->parent->left) {

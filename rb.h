@@ -4,6 +4,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#define rb_entry(ptr, type, member)                                                                                    \
+    ({                                                                                                                 \
+        const typeof(((type *)0)->member) *__mptr = (ptr);                                                             \
+        (type *)((char *)__mptr - offsetof(type, member));                                                             \
+    })
+
 #define rb_for_each(TREE, NODE) for ((NODE) = rb_first((TREE).root); (NODE) != NULL; (NODE) = rb_next(NODE))
 
 enum rb_color {

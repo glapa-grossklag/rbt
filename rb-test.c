@@ -6,12 +6,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define container_of(ptr, type, member)                                                                                \
-    ({                                                                                                                 \
-        const typeof(((type *)0)->member) *__mptr = (ptr);                                                             \
-        (type *)((char *)__mptr - offsetof(type, member));                                                             \
-    })
-
 #define TESTS 1000000
 
 // ----------------------------------------------------------------------------
@@ -25,8 +19,8 @@ struct box {
 
 int
 cmp(struct rb_node *l, struct rb_node *r) {
-    struct box *lb = container_of(l, struct box, rb_node);
-    struct box *rb = container_of(r, struct box, rb_node);
+    struct box *lb = rb_entry(l, struct box, rb_node);
+    struct box *rb = rb_entry(r, struct box, rb_node);
 
     if (lb->key < rb->key)
         return -1;

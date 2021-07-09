@@ -2,7 +2,7 @@
 #define RB_H
 
 #include <stdbool.h>
-#include <stddef.h>
+#include <stdint.h>
 
 #define rb_entry(ptr, type, member)                                                                                    \
     ({                                                                                                                 \
@@ -12,16 +12,10 @@
 
 #define rb_for_each(TREE, NODE) for ((NODE) = rb_first((TREE).root); (NODE) != NULL; (NODE) = rb_next(NODE))
 
-enum rb_color {
-    RB_RED,
-    RB_BLACK,
-};
-
 struct rb_node {
-    struct rb_node *parent;
+    uintptr_t parent;
     struct rb_node *left;
     struct rb_node *right;
-    enum rb_color color;
 };
 
 /*

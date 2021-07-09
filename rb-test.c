@@ -46,11 +46,13 @@ cmp(struct rb_node *l, struct rb_node *r) {
  * This test does not rely on any other test and can be assumed to be a measure
  * of correctness for insertion.
  */
-bool
+void
 test_insert_inorder(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
@@ -58,19 +60,11 @@ test_insert_inorder(void) {
         // Insertion will only fail if a duplicate key is inserted, which won't
         // happen during in-order insertion.
         struct rb_node *inserted = rb_insert(&tree, &boxes[i].rb_node);
-        if (!inserted) {
-            return false;
-        }
+        assert(inserted);
     }
 
-    // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
-
-    // The tree is valid!
+    assert(rb_is_valid(&tree));
     free(boxes);
-    return true;
 }
 
 /*
@@ -79,11 +73,13 @@ test_insert_inorder(void) {
  * This test does not rely on any other test and can be assumed to be a measure
  * of correctness for insertion.
  */
-bool
+void
 test_insert_random(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].rb_node = rb_node_init();
 
@@ -93,14 +89,8 @@ test_insert_random(void) {
         } while (!rb_insert(&tree, &boxes[i].rb_node));
     }
 
-    // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
-
-    // The tree is valid!
+    assert(rb_is_valid(&tree));
     free(boxes);
-    return true;
 }
 
 /*
@@ -121,12 +111,14 @@ test_insert_random(void) {
  * This test assumes the insertion operation is correct and should not be used
  * as the sole measure of correctness.
  */
-bool
+void
 test_search_inorder(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
-    // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
+    // Build up the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
@@ -141,9 +133,7 @@ test_search_inorder(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == &boxes[i].rb_node);
     }
 
     // Search for elements that should **not** be in the tree.
@@ -153,14 +143,10 @@ test_search_inorder(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
-    // The tree is valid!
     free(boxes);
-    return true;
 }
 
 /*
@@ -169,12 +155,14 @@ test_search_inorder(void) {
  * This test assumes the insertion operation is correct and should not be used
  * as the sole measure of correctness.
  */
-bool
+void
 test_search_random(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
-    // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
+    // Build up the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].rb_node = rb_node_init();
 
@@ -191,9 +179,7 @@ test_search_random(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == &boxes[i].rb_node);
     }
 
     // Search for elements that should **not** be in the tree.
@@ -203,14 +189,10 @@ test_search_random(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
-    // The tree is valid!
     free(boxes);
-    return true;
 }
 
 /*
@@ -219,12 +201,14 @@ test_search_random(void) {
  * This test assumes the insertion and search operations are correct and should
  * not be used as the sole measure of correctness.
  */
-bool
+void
 test_remove_inorder(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
-    // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
+    // Build up the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
@@ -243,25 +227,16 @@ test_remove_inorder(void) {
         // the original node.
         struct rb_node *found = rb_search(&tree, &box.rb_node);
         struct rb_node *removed = rb_remove(&tree, found);
-        if (found != removed || removed != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == removed && removed == &boxes[i].rb_node);
 
         // Should be gone now!
         found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
-    // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
+    assert(rb_is_valid(&tree));
 
-    // The tree is valid!
     free(boxes);
-    return true;
 }
 
 /*
@@ -270,12 +245,14 @@ test_remove_inorder(void) {
  * This test assumes the insertion and search operations are correct and should
  * not be used as the sole measure of correctness.
  */
-bool
+void
 test_remove_random(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
-    // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
+    // Build up the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].rb_node = rb_node_init();
 
@@ -296,49 +273,38 @@ test_remove_random(void) {
         // the original node.
         struct rb_node *found = rb_search(&tree, &box.rb_node);
         struct rb_node *removed = rb_remove(&tree, found);
-        if (found != removed || removed != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == removed && removed == &boxes[i].rb_node);
 
         // Should be gone now!
         found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
-    // The tree must be valid.
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
+    assert(rb_is_valid(&tree));
 
-    // The tree is valid!
     free(boxes);
-    return true;
 }
 
 /*
  * Test insertion, search, and removal on the same tree. Elements are inserted in-order.
  */
-bool
+void
 test_all_inorder(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
-    // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
+    // Build up the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = i;
         boxes[i].rb_node = rb_node_init();
 
         struct rb_node *inserted = rb_insert(&tree, &boxes[i].rb_node);
-        if (!inserted) {
-            return false;
-        }
+        assert(inserted);
     }
 
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
+    assert(rb_is_valid(&tree));
 
     // Search for elements that should be in the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
@@ -347,9 +313,7 @@ test_all_inorder(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == &boxes[i].rb_node);
     }
 
     // Search for elements that should **not** be in the tree.
@@ -359,9 +323,7 @@ test_all_inorder(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
     // Remove half of the items from the tree.
@@ -371,19 +333,13 @@ test_all_inorder(void) {
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
         struct rb_node *removed = rb_remove(&tree, found);
-        if (found != removed || removed != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == removed && removed == &boxes[i].rb_node);
 
         found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
+    assert(rb_is_valid(&tree));
 
     // Search for the half that should still be in the tree, despite removal.
     for (ptrdiff_t i = TESTS / 2 + 1; i < TESTS; i += 1) {
@@ -392,25 +348,23 @@ test_all_inorder(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == &boxes[i].rb_node);
     }
 
-    // We made it!
     free(boxes);
-    return true;
 }
 
 /*
  * Test insertion, search, and removal on the same tree. Elements are inserted randomly.
  */
-bool
+void
 test_all_random(void) {
     struct rb_tree tree = rb_tree_init(cmp);
 
-    // Build up the tree.
     struct box *boxes = malloc(TESTS * sizeof(struct box));
+    assert(boxes);
+
+    // Build up the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         boxes[i].key = rand();
         boxes[i].rb_node = rb_node_init();
@@ -420,9 +374,7 @@ test_all_random(void) {
         } while (!rb_insert(&tree, &boxes[i].rb_node));
     }
 
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
+    assert(rb_is_valid(&tree));
 
     // Search for elements that should be in the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
@@ -431,21 +383,17 @@ test_all_random(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == &boxes[i].rb_node);
     }
 
-    // Search for elements that should **not** be in the tree.
+    // Search for elements that should *not* be in the tree.
     for (ptrdiff_t i = 0; i < TESTS; i += 1) {
         struct box box;
         box.key = -boxes[i].key - 1; // Note the negative key. The '-1' is to deal with 0.
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
     // Remove half of the items from the tree.
@@ -455,19 +403,13 @@ test_all_random(void) {
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
         struct rb_node *removed = rb_remove(&tree, found);
-        if (found != removed || removed != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == removed && removed == &boxes[i].rb_node);
 
         found = rb_search(&tree, &box.rb_node);
-        if (found) {
-            return false;
-        }
+        assert(!found);
     }
 
-    if (!rb_is_valid(&tree)) {
-        return false;
-    }
+    assert(rb_is_valid(&tree));
 
     // Search for the half that should still be in the tree, despite removal.
     for (ptrdiff_t i = TESTS / 2 + 1; i < TESTS; i += 1) {
@@ -476,14 +418,10 @@ test_all_random(void) {
         box.rb_node = rb_node_init();
 
         struct rb_node *found = rb_search(&tree, &box.rb_node);
-        if (found != &boxes[i].rb_node) {
-            return false;
-        }
+        assert(found == &boxes[i].rb_node);
     }
 
-    // We made it!
     free(boxes);
-    return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -498,23 +436,23 @@ main(void) {
     fprintf(stderr, "%u elements\n", TESTS);
 
     fprintf(stderr, "Testing insertion... ");
-    assert(test_insert_inorder());
-    assert(test_insert_random());
+    test_insert_inorder();
+    test_insert_random();
     fprintf(stderr, "passed\n");
 
     fprintf(stderr, "Testing search... ");
-    assert(test_search_inorder());
-    assert(test_search_random());
+    test_search_inorder();
+    test_search_random();
     fprintf(stderr, "passed\n");
 
     fprintf(stderr, "Testing removal... ");
-    assert(test_remove_inorder());
-    assert(test_remove_random());
+    test_remove_inorder();
+    test_remove_random();
     fprintf(stderr, "passed\n");
 
     fprintf(stderr, "Testing all together... ");
-    assert(test_all_inorder());
-    assert(test_all_random());
+    test_all_inorder();
+    test_all_random();
     fprintf(stderr, "passed\n");
 
     return EXIT_SUCCESS;

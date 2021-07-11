@@ -6,22 +6,22 @@
 #define RB_RED 0
 #define RB_BLACK 1
 
-#define COLOR_OF(NODE) ((uintptr_t)(NODE)->parent & 1)
+#define COLOR_OF(NODE) ((uintptr_t) (NODE)->parent & 1)
 #define IS_RED(NODE) (COLOR_OF(NODE) == RB_RED)
 #define IS_BLACK(NODE) (COLOR_OF(NODE) == RB_BLACK)
-#define PARENT_OF(NODE) ((struct rb_node *)((uintptr_t)((NODE)->parent) & ~3))
+#define PARENT_OF(NODE) ((struct rb_node *) ((uintptr_t) ((NODE)->parent) & ~3))
 #define SET_PARENT(NODE, PARENT)                                                                                       \
     do {                                                                                                               \
-        (NODE)->parent = ((NODE)->parent & 3) | (uintptr_t)(PARENT);                                                   \
+        (NODE)->parent = ((NODE)->parent & 3) | (uintptr_t) (PARENT);                                                  \
     } while (0);
 #define SET_COLOR(NODE, COLOR)                                                                                         \
     do {                                                                                                               \
-        (NODE)->parent = ((NODE)->parent & ~1) | (uintptr_t)(COLOR);                                                   \
+        (NODE)->parent = ((NODE)->parent & ~1) | (uintptr_t) (COLOR);                                                  \
     } while (0);
 
 #define NIL (&nil)
 
-static struct rb_node nil = {(uintptr_t)NIL, NIL, NIL};
+static struct rb_node nil = {(uintptr_t) NIL, NIL, NIL};
 
 struct rb_tree
 rb_tree_init(rb_cmp cmp) {

@@ -5,4 +5,5 @@
     AlignTrailingComments: true,
     AlwaysBreakAfterDefinitionReturnType: true,
     PointerAlignment: Right,
+    SpaceAfterCStyleCast: true,
 }
